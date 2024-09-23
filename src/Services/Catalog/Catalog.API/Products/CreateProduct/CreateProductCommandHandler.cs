@@ -1,5 +1,4 @@
 ﻿using BuildingBlocks.CQRS;
-using Catalog.API.Models;
 
 namespace Catalog.API.Products.CreateProduct;
 
@@ -21,7 +20,7 @@ internal class CreateProductCommandHandler(IDocumentSession documentSession)
         }; 
 
         documentSession.Store(product);
-        documentSession.SaveChanges();
+        await documentSession.SaveChangesAsync(cancellationToken);
 
         return new CreateProductResult(product.Id);
     }
