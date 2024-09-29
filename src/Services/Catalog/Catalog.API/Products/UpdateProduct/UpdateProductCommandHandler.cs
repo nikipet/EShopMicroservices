@@ -7,21 +7,32 @@ namespace Catalog.API.Products.UpdateProduct;
 public record UpdateProductCommand(Guid Id, string Name, List<string> Categories, string Description, string ImageFile, decimal? Price) : ICommand<UpdateProductResult>;
 public record UpdateProductResult(bool IsSuccesfull);
 
-internal class UpdateProductCommandHandler(IDocumentSession session, ILogger<UpdateProductCommandHandler> logger)
+public class UpdateProductCommandValidator : AbstractValidator<UpdateProductCommand>
+{
+    public UpdateProductCommandValidator()
+    {
+        RuleFor(c => c.Id).NotEmpty().WithMessage("Id of the product to be update is required");
+        RuleFor(c => c.Name).NotEmpty().WithMessage("The name of the product cannot be empty")
+            .Length(2, 150).WithMessage("The name of the product must be between 2 and 150 characters long");
+
+        RuleFor(c => c.Price).GreaterThan(0).WithMessage("The price must be larger than 0");
+    }
+}
+
+internal class UpdateProductCommandHandler(IDocumentSession session)
     : ICommandHandler<UpdateProductCommand, UpdateProductResult>
 {
     public async Task<UpdateProductResult> Handle(UpdateProductCommand command, CancellationToken cancellationToken)
     {
-        logger.LogInformation("Called UpdateProductCommandHandler.Handle with command @{Command}", command);
         var product = await session.LoadAsync<Product>(command.Id, cancellationToken);
 
         if (product == null)
         {
-            throw new ProductNotFoundException();
+            throw new ProductNotFoundException(command.Id);
         }
 
         product.Name = command.Name;
-        product.Categories = command.Categories;
+        product.Category = command.Categories;
         product.Description = command.Description;
         product.ImageFile = command.ImageFile;
         product.Price = command.Price;
