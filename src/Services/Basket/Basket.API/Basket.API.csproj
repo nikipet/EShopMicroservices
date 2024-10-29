@@ -21,6 +21,7 @@
 	  <PackageReference Include="AspNetCore.HealthChecks.Redis" Version="8.0.*" />
 	  <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="8.0.*" />
 	  <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="8.0.*" />
+      <PackageReference Include="Grpc.AspNetCore" Version="2.66.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,6 +32,12 @@
     <ContainerEnvironmentVariable Include="ASPNETCORE_HTTPS_PORTS">
       <Value>8081</Value>
     </ContainerEnvironmentVariable>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="..\..\Discount\Discount.Grpc\Protos\discount.proto" GrpcService="Client">
+      <Link>Protos\discount.proto</Link>
+    </Protobuf>
   </ItemGroup>
 
 </Project>

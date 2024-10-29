@@ -1,24 +1,25 @@
 using Basket.API.Data;
 using Basket.API.Extensions.MartenExtensions;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-
 using BuildingBlocks.Behaviors;
 using BuildingBlocks.Exceptions.Handler;
-
-using Marten;
+using Discount.Grpc;
 using HealthChecks.UI.Client;
+using Marten;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var assembly = typeof(Program).Assembly;
+// Application Services
 builder.Services.AddMediatR(config =>
 {
     config.RegisterServicesFromAssembly(assembly);
     config.AddOpenBehavior(typeof(ValidationBehavior<,>));
     config.AddOpenBehavior(typeof(LoggingBehavior<,>));
 });
-
 builder.Services.AddCarter();
+
+// Data Services
 builder.Services.AddScoped<IBasketRepository, BasketRepository>();
 builder.Services.Decorate<IBasketRepository, CachedBasketRepository>();
 
@@ -33,6 +34,21 @@ builder.Services.AddMarten(opts =>
     opts.OverrideSchemaIdentities();
 }).UseLightweightSessions();
 
+// GRPC Services
+builder.Services.AddGrpcClient<DiscountService.DiscountServiceClient>(opts =>
+    {
+        opts.Address = new Uri(builder.Configuration["GrpcSettings:DiscountUrl"]!);
+    })
+    .ConfigurePrimaryHttpMessageHandler(() =>
+    {
+        var handler = new HttpClientHandler()
+        {
+            ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+        };
+        return handler;
+    });
+
+// Cross-Cutting Services
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 builder.Services.AddHealthChecks()
     .AddNpgSql(builder.Configuration.GetConnectionString("Database")!)
@@ -41,9 +57,8 @@ builder.Services.AddHealthChecks()
 var app = builder.Build();
 app.MapCarter();
 app.UseExceptionHandler(opts => { });
-app.UseHealthChecks("/health",new HealthCheckOptions
+app.UseHealthChecks("/health", new HealthCheckOptions
 {
     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
 });
 app.Run();
-        
