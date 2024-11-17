@@ -22,6 +22,17 @@ services:
       - "5433:5432"
     volumes:
       - postgres_basket:/var/lib/postgresql/data/
+        
+  orderingdb:
+    container_name: orderingdb
+    environment:
+      - MSSQL_SA_PASSWORD=ThisIsLongPass!1
+      - ACCEPT_EULA=Y
+    restart: always
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_ordering:/var/opt/mssql
 
   distributedcache:
     container_name: distributedcache
