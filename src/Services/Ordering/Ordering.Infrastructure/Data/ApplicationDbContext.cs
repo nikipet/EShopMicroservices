@@ -1,10 +1,12 @@
 ﻿using System.Reflection;
 using Microsoft.EntityFrameworkCore;
+using Ordering.Application.Data;
 using Ordering.Domain.Models;
 
 namespace Ordering.Infrastructure.Data;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+    : DbContext(options), IApplicationDbContext
 {
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<Product> Products => Set<Product>();
@@ -18,7 +20,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         // https://stackoverflow.com/questions/15407340/difference-between-assembly-getexecutingassembly-and-typeofprogram-assembly
         // Found additional info on the issue => https://rules.sonarsource.com/csharp/tag/performance/RSPEC-3902/
         // modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-        
+
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
         base.OnModelCreating(modelBuilder);
     }

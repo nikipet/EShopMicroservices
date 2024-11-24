@@ -63,6 +63,6 @@ public class DiscountService(DiscountContext dbContext, ILogger<DiscountService>
 
         dbContext.Coupons.Remove(existingCoupon);
         await dbContext.SaveChangesAsync();
-        return new DeleteDiscountResponse(isSuccess: true);
+        return new DeleteDiscountResponse();
     }
 }
