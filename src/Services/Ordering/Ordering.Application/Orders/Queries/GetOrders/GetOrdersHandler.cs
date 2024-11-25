@@ -11,13 +11,13 @@ public class GetOrdersHandler(IApplicationDbContext dbContext) : IQueryHandler<G
         var orders = await
             dbContext.Orders
                 .AsNoTracking()
-                .OrderBy(o => o.OrderName)
+                .OrderBy(o => o.OrderName.Value)
                 .Include(o => o.OrderItems)
-                .Skip(request.PaginationRequest.PageNumber * request.PaginationRequest.PageSize)
+                .Skip(request.PaginationRequest.PageIndex * request.PaginationRequest.PageSize)
                 .Take(request.PaginationRequest.PageSize)
                 .ToListAsync(cancellationToken);
 
-        return new GetOrdersResult(new PaginatedResult<OrderDto>(request.PaginationRequest.PageNumber,
+        return new GetOrdersResult(new PaginatedResult<OrderDto>(request.PaginationRequest.PageIndex,
                 request.PaginationRequest.PageSize,
                 orders.Count,
                 orders.ToOrderDtoList()));
