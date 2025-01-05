@@ -1,3 +1,4 @@
+using BuildingBlocks.Messaging.Extensions;
 using Ordering.API;
 using Ordering.Application;
 using Ordering.Infrastructure;
@@ -6,9 +7,10 @@ using Ordering.Infrastructure.Data.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
-    .AddApplicationServices()
+    .AddApplicationServices(builder.Configuration)
     .AddInfrastructureServices(builder.Configuration)
-    .AddApiServices(builder.Configuration);
+    .AddApiServices(builder.Configuration)
+    .AddMessageBroker(builder.Configuration,typeof(Program).Assembly);
 
 var app = builder.Build();
 

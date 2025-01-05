@@ -54,3 +54,21 @@ services:
     - "D:\\repos\\MS course mine\\EShopMicroservices\\src\\Services\\Discount\\Discount.Grpc:/app:rw"
     - "D:\\repos\\MS course mine\\EShopMicroservices\\src:/src:rw"
     working_dir: "/app"
+  ordering.api:
+    build:
+      context: "D:\\repos\\MS course mine\\EShopMicroservices\\src"
+      dockerfile: "Services/Ordering/Ordering.API/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net8.0/Ordering.API.dll"
+    environment:
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "orderingapi:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\GRIGS\\.nuget\\packages:/home/app/.nuget/packages"
+    - "D:\\repos\\MS course mine\\EShopMicroservices\\src\\Services\\Ordering\\Ordering.API:/app:rw"
+    - "D:\\repos\\MS course mine\\EShopMicroservices\\src:/src:rw"
+    working_dir: "/app"

@@ -2,6 +2,7 @@ using Basket.API.Data;
 using Basket.API.Extensions.MartenExtensions;
 using BuildingBlocks.Behaviors;
 using BuildingBlocks.Exceptions.Handler;
+using BuildingBlocks.Messaging.Extensions;
 using Discount.Grpc;
 using HealthChecks.UI.Client;
 using Marten;
@@ -53,6 +54,8 @@ builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 builder.Services.AddHealthChecks()
     .AddNpgSql(builder.Configuration.GetConnectionString("Database")!)
     .AddRedis(builder.Configuration.GetConnectionString("Redis")!);
+
+builder.Services.AddMessageBroker(builder.Configuration);
 
 var app = builder.Build();
 app.MapCarter();
