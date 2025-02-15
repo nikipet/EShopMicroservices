@@ -72,3 +72,21 @@ services:
     - "D:\\repos\\MS course mine\\EShopMicroservices\\src\\Services\\Ordering\\Ordering.API:/app:rw"
     - "D:\\repos\\MS course mine\\EShopMicroservices\\src:/src:rw"
     working_dir: "/app"
+  yarpapigateway:
+    build:
+      context: "D:\\repos\\MS course mine\\EShopMicroservices\\src"
+      dockerfile: "ApiGateways/YarpApiGateway/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net8.0/YarpApiGateway.dll"
+    environment:
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "yarpapigateway:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\GRIGS\\.nuget\\packages:/home/app/.nuget/packages"
+    - "D:\\repos\\MS course mine\\EShopMicroservices\\src\\ApiGateways\\YarpApiGateway:/app:rw"
+    - "D:\\repos\\MS course mine\\EShopMicroservices\\src:/src:rw"
+    working_dir: "/app"
